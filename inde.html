@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azan Prayer Times</title>
+    
+    <!-- Favicon for Browser Tab -->
+    <link rel="icon" type="image/png" href="Leonardo_Phoenix_A_serene_digital_illustration_featuring_a_cal_3.jpg">
+    
+    <!-- Apple Touch Icon for Mobile Browsers -->
+    <link rel="apple-touch-icon" type="image/png" href="Leonardo_Phoenix_A_serene_digital_illustration_featuring_a_cal_3.jpg">
+    
+    <!-- Open Graph Image for Sharing -->
+    <meta property="og:image" content="/Leonardo_Phoenix_A_serene_digital_illustration_featuring_a_cal_3.jpg">
+    
+    <!-- Additional Metadata -->
+    <meta property="og:title" content="Azan Prayer Times By Muhammad Raif">
+    <meta property="og:description" content="Accurate prayer timings with notifications.">
+    <meta property="og:type" content="website">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 0;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        .prayer-time {
+            position: relative;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            padding: 10px;
+        }
+        .dropdown button {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .dropdown button:hover {
+            background-color: #0056b3;
+        }
+        .dua {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fffbeb;
+            font-size: 1.1em;
+        }
+        footer {
+            margin-top: 20px;
+            padding: 10px 0;
+            background-color: #f1f1f1;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="header-title">Azan Prayer Times By Muhammad Raif</h1>
+        <p id="header-description">Accurate prayer timings with notifications By Muhammad Raif</p>
+    </header>
+
+    <div class="container">
+        <div>
+            <label id="language-label" for="language-selector">Select Language:</label>
+            <select id="language-selector" onchange="changeLanguage()"></select>
+        </div>
+
+        <div id="location-info"></div>
+        <h2 id="prayer-heading">Today's Prayer Times</h2>
+        <div id="prayer-times">
+            <p>Fetching prayer times...</p>
+        </div>
+        <div class="dua" id="dua"></div>
+    </div>
+
+    <footer>
+        &copy; 2024 Azan Prayer Times By Muhammad Raif. All rights reserved Muhammad Raif.
+    </footer>
+
+    <!-- Audio elements for Fajr and other azans -->
+    <audio id="fajr-alarm-sound" src="fajr-azan.mp3"></audio>
+    <audio id="azan-alarm-sound" src="azan1.mp3"></audio>
+
+    <script>
+        const translations = {
+            en: {
+                headerTitle: "Azan Prayer Times",
+                headerDescription: "Accurate prayer timings with notifications",
+                prayerHeading: "Today's Prayer Times",
+                locationLabel: "Select Language:",
+                dua: "Dua After Azan: O Allah! Lord of this perfect call and established prayer, grant Muhammad the intercession and favor, and raise him to the honored position You have promised him.",
+            },
+            ur: {
+                headerTitle: "اذان کے اوقات",
+                headerDescription: "اطلاعات کے ساتھ نماز کے درست اوقات",
+                prayerHeading: "آج کے اذان کے اوقات",
+                locationLabel: "زبان منتخب کریں:",
+                dua: "اذان کے بعد کی دعا: اے اللہ! اس مکمل دعوت اور قائم کی گئی نماز کے رب، محمد کو شفاعت اور فضیلت عطا فرما اور انہیں وہ معزز مقام عطا فرما جس کا تو نے ان سے وعدہ کیا ہے۔",
+            },
+        };
+
+        function applyLanguage() {
+            const lang = localStorage.getItem("language") || "en";
+            const t = translations[lang] || translations.en;
+            document.getElementById("header-title").textContent = t.headerTitle;
+            document.getElementById("header-description").textContent = t.headerDescription;
+            document.getElementById("prayer-heading").textContent = t.prayerHeading;
+            document.getElementById("language-label").textContent = t.locationLabel;
+            document.getElementById("dua").textContent = t.dua;
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById("language-selector").value;
+            localStorage.setItem("language", lang);
+            applyLanguage();
+        }
+
+        function populateLanguageSelector() {
+            const languages = [
+                { code: "en", name: "English" },
+                { code: "ur", name: "Urdu" },
+            ];
+
+            const selector = document.getElementById("language-selector");
+            languages.forEach(lang => {
+                const option = document.createElement("option");
+                option.value = lang.code;
+                option.textContent = lang.name;
+                selector.appendChild(option);
+            });
+            selector.value = localStorage.getItem("language") || "en";
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(fetchPrayerTimes, () => {
+                    alert("Failed to get location.");
+                });
+            } else {
+                alert("Geolocation not supported.");
+            }
+        }
+
+        function fetchPrayerTimes(position) {
+            const { latitude, longitude } = position.coords;
+            fetch(`https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=2`)
+                .then(res => res.json())
+                .then(data => {
+                    displayPrayerTimes(data.data.timings);
+                })
+                .catch(() => alert("Failed to fetch prayer times."));
+        }
+
+        function displayPrayerTimes(timings) {
+            const container = document.getElementById("prayer-times");
+            container.innerHTML = "";
+
+            Object.entries(timings).forEach(([prayer, time]) => {
+                const div = document.createElement("div");
+                div.className = "prayer-time";
+                div.innerHTML = `<strong>${prayer}:</strong> ${time}`;
+                
+                const dropdown = document.createElement("div");
+                dropdown.className = "dropdown";
+                dropdown.innerHTML = `<button onclick="setAlarm('${prayer}', '${time}')">Set Alarm</button>`;
+                div.appendChild(dropdown);
+
+                container.appendChild(div);
+            });
+        }
+
+        function setAlarm(prayer, time) {
+            const alarmTime = new Date();
+            const [hours, minutes] = time.split(":").map(Number);
+            alarmTime.setHours(hours, minutes, 0);
+
+            const now = new Date();
+            const delay = alarmTime - now;
+
+            if (delay > 0) {
+                setTimeout(() => {
+                    if (prayer.toLowerCase() === "fajr") {
+                        document.getElementById("fajr-alarm-sound").play();
+                    } else {
+                        document.getElementById("azan-alarm-sound").play();
+                    }
+                    alert(`It's time for ${prayer}`);
+                }, delay);
+            } else {
+                alert("This prayer time has passed.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            applyLanguage();
+            populateLanguageSelector();
+            getLocation();
+        });
+    </script>
+</body>
+</html>
